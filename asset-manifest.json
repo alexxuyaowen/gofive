@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/gofive/static/css/main.580514b3.css",
+    "main.js": "/gofive/static/js/main.7519e8d4.js",
+    "index.html": "/gofive/index.html",
+    "main.580514b3.css.map": "/gofive/static/css/main.580514b3.css.map",
+    "main.7519e8d4.js.map": "/gofive/static/js/main.7519e8d4.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.580514b3.css",
+    "static/js/main.7519e8d4.js"
+  ]
+}
