@@ -36,6 +36,8 @@ body {
 .winning-pieces {
   border-color: gold;
   filter: drop-shadow(0 0 1rem gold) blur(0.1rem);
+  /* animation: winning-pieces 5s; */
+  /* animation-iteration-count: infinite; */
 }
 
 /* toolkit */
@@ -92,12 +94,6 @@ body {
   filter: drop-shadow(0 0 1rem white) blur(0.3rem);
 }
 
-.game-over {
-  filter: none;
-  transform: scale(1.2);
-  animation: game-over 5s;
-}
-
 /* hover effects */
 
 .black-hover:hover {
@@ -125,6 +121,22 @@ body {
   filter: none;
 }
 
+.game-over-signifier:hover {
+  filter: drop-shadow(0 0 1rem gold);
+}
+
+/* game over */
+
+.game-over-signifier {
+  transform: scale(1.2);
+  animation: game-over 5s;
+  filter: drop-shadow(0 0 1rem gold);
+}
+
+.game-over-board {
+  cursor: not-allowed;
+}
+
 /* animation */
 
 @keyframes game-over {
@@ -135,10 +147,11 @@ body {
 
   60% {
     transform: scale(1.5);
-    filter: blur(0);
+    filter: none;
   }
 
   100% {
     transform: scale(1.2);
+    filter: drop-shadow(0 0 1rem gold);
   }
 }

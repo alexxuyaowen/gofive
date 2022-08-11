@@ -4,6 +4,17 @@ const classes = { '-1': 'unfilled', 0: 'black', 1: 'white' };
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
 const initialBoard = new Array(15 * 15).fill(-1);
 
+// To do:
+// refactor the code
+// make the pieces look nicers
+// find a nice board
+// add sound effect
+// add a countdown timer
+// able to replay
+// able to save a game and resume later on
+// allow two players to play remotely
+// add AI
+
 function App() {
   // unfilled is -1, black is 0, white is 1
   const [board, setBoard] = useState(initialBoard);
@@ -31,18 +42,12 @@ function App() {
       // helper to check each direction
       const checkOneDirection = (pos, dir) => {
         for (let i = 0; i < 5; i++) {
-          if (!pieces.has(pos + i * dir)) {
+          if (!pieces.has(pos + dir * i)) {
             return false;
           }
         }
 
-        setTheFive([
-          pos,
-          pos + dir,
-          pos + dir * 2,
-          pos + dir * 3,
-          pos + dir * 4,
-        ]);
+        setTheFive([0, 1, 2, 3, 4].map(e => pos + dir * e));
 
         return true;
       };
@@ -61,11 +66,11 @@ function App() {
     checkWinning(1); // check for the white player
   }, [history]);
 
-  const moveHandler = i => () => {
-    if (!history.includes(i) && winner === -1) {
+  const moveHandler = pos => () => {
+    if (!history.includes(pos) && winner === -1) {
       setBoard(prev =>
-        prev.map((curr, curr_i) => {
-          if (curr_i === i && curr === -1) {
+        prev.map((curr, curr_pos) => {
+          if (curr_pos === pos && curr === -1) {
             return turn();
           }
 
@@ -73,14 +78,14 @@ function App() {
         })
       );
 
-      setHistory(prev => [...prev, i]);
+      setHistory(prev => [...prev, pos]);
     }
   };
 
   const backHandler = () => {
     const backPos = history.at(-1);
-    setBoard(prev => prev.map((e, i) => (i === backPos ? -1 : e)));
-    setHistory(prev => prev.filter(e => e !== backPos));
+    setBoard(prev => prev.map((piece, pos) => (pos === backPos ? -1 : piece)));
+    setHistory(prev => prev.filter(pos => pos !== backPos));
     setWinner(-1);
     setTheFive([]);
   };
@@ -97,18 +102,18 @@ function App() {
 
   return (
     <Fragment>
-      <div className='board'>
-        {board.map((e, i) => (
+      <div className={`board ${winner !== -1 && 'game-over-board'}`}>
+        {board.map((piece, pos) => (
           <div
-            key={i}
-            className={`space ${classes[e]} ${
-              specialSpaces.has(i) && 'special-space'
-            } ${theFive.includes(i) && 'winning-pieces'} ${
-              e === -1 &&
+            key={pos}
+            className={`space ${classes[piece]} ${
+              specialSpaces.has(pos) && 'special-space'
+            } ${theFive.includes(pos) && 'winning-pieces'} ${
+              piece === -1 &&
               winner === -1 &&
               (turn() === 0 ? 'black-hover' : 'white-hover')
             }`}
-            onClick={moveHandler(i)}
+            onClick={moveHandler(pos)}
           />
         ))}
       </div>
@@ -127,7 +132,7 @@ function App() {
               : turn() === 1
               ? 'black-signifier'
               : 'white-signifier'
-          } ${winner !== -1 && 'game-over'}`}
+          } ${winner !== -1 && 'game-over-signifier'}`}
         />
 
         <button onClick={restartHandler} disabled={history.length === 0}>
