@@ -168,3 +168,10 @@ body {
     filter: drop-shadow(0 0 1rem gold) blur(0.1rem);
   }
 }
+
+/* media queries
+@media (max-width: 480px) {
+  body {
+    transform: scale(2);
+  }
+} */

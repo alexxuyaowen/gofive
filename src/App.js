@@ -1,32 +1,30 @@
 import { Fragment, useState, useEffect } from 'react';
 
-const classes = { '-1': 'unfilled', 0: 'black', 1: 'white' };
+const initialBoard = new Array(15 * 15).fill(0); // empty is 0, black is -1, white is 1
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
-const initialBoard = new Array(15 * 15).fill(-1);
 
 function App() {
-  // unfilled is -1, black is 0, white is 1
   const [board, setBoard] = useState(initialBoard);
   const [history, setHistory] = useState([]);
-  const [winner, setWinner] = useState(-1);
+  const [winner, setWinner] = useState(0);
   const [theFive, setTheFive] = useState([]);
 
   useEffect(() => {
     const blacks = new Set(),
       whites = new Set();
 
-    history.forEach((e, i) => {
-      if (i % 2 === 0) {
-        blacks.add(e);
+    history.forEach((pos, step) => {
+      if (step % 2 === 0) {
+        blacks.add(pos);
       } else {
-        whites.add(e);
+        whites.add(pos);
       }
     });
 
     // helper to check the winning condition
     const checkWinning = option => {
       const directions = [1, 14, 15, 16];
-      const pieces = option === 0 ? blacks : whites;
+      const pieces = option === -1 ? blacks : whites;
 
       // helper to check each direction
       const checkOneDirection = (pos, dir) => {
@@ -51,20 +49,16 @@ function App() {
       }
     };
 
-    checkWinning(0); // check for the black player
+    checkWinning(-1); // check for the black player
     checkWinning(1); // check for the white player
   }, [history]);
 
   const moveHandler = pos => () => {
-    if (!history.includes(pos) && winner === -1) {
+    if (!history.includes(pos) && !winner) {
       setBoard(prev =>
-        prev.map((curr, curr_pos) => {
-          if (curr_pos === pos && curr === -1) {
-            return turn();
-          }
-
-          return curr;
-        })
+        prev.map((curr_piece, curr_pos) =>
+          curr_pos === pos && !curr_piece ? turn() : curr_piece
+        )
       );
 
       setHistory(prev => [...prev, pos]);
@@ -73,34 +67,34 @@ function App() {
 
   const backHandler = () => {
     const backPos = history.at(-1);
-    setBoard(prev => prev.map((piece, pos) => (pos === backPos ? -1 : piece)));
+    setBoard(prev => prev.map((piece, pos) => (pos === backPos ? 0 : piece)));
     setHistory(prev => prev.filter(pos => pos !== backPos));
-    setWinner(-1);
+    setWinner(0);
     setTheFive([]);
   };
 
   const restartHandler = () => {
     setBoard(initialBoard);
     setHistory([]);
-    setWinner(-1);
+    setWinner(0);
     setTheFive([]);
   };
 
-  // return 0 if it's black's turn, else 1
-  const turn = () => history.length % 2;
+  // return -1 if it's black's turn, else 1
+  const turn = () => (history.length % 2 === 0 ? -1 : 1);
 
   return (
     <Fragment>
-      <div className={`board ${winner !== -1 && 'game-over-board'}`}>
+      <div className={`board ${winner && 'game-over-board'}`}>
         {board.map((piece, pos) => (
           <div
             key={pos}
-            className={`space ${classes[piece]} ${
-              piece === -1 && specialSpaces.has(pos) && 'special-space'
+            className={`space ${piece && (piece === -1 ? 'black' : 'white')} ${
+              !piece && specialSpaces.has(pos) && 'special-space'
             } ${theFive.includes(pos) && 'winning-pieces'} ${
-              piece === -1 &&
-              winner === -1 &&
-              (turn() === 0 ? 'black-hover' : 'white-hover')
+              !piece &&
+              !winner &&
+              (turn() === -1 ? 'black-hover' : 'white-hover')
             }`}
             onClick={moveHandler(pos)}
           />
@@ -114,14 +108,14 @@ function App() {
 
         <div
           className={`${
-            winner === -1
-              ? turn() === 0
+            !winner
+              ? turn() === -1
                 ? 'black-signifier'
                 : 'white-signifier'
               : turn() === 1
               ? 'black-signifier'
               : 'white-signifier'
-          } ${winner !== -1 && 'game-over-signifier'}`}
+          } ${winner && 'game-over-signifier'}`}
         />
 
         <button onClick={restartHandler} disabled={history.length === 0}>
@@ -135,7 +129,8 @@ function App() {
 export default App;
 
 // To do:
-// refactor the code
+// refactor the code - readability, reusability
+// support mobile devices
 // make the pieces look nicers
 // find a nice board
 // add sound effect
