@@ -4,17 +4,6 @@ const classes = { '-1': 'unfilled', 0: 'black', 1: 'white' };
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
 const initialBoard = new Array(15 * 15).fill(-1);
 
-// To do:
-// refactor the code
-// make the pieces look nicers
-// find a nice board
-// add sound effect
-// add a countdown timer
-// able to replay
-// able to save a game and resume later on
-// allow two players to play remotely
-// add AI
-
 function App() {
   // unfilled is -1, black is 0, white is 1
   const [board, setBoard] = useState(initialBoard);
@@ -144,3 +133,14 @@ function App() {
 }
 
 export default App;
+
+// To do:
+// refactor the code
+// make the pieces look nicers
+// find a nice board
+// add sound effect
+// add a countdown timer
+// able to replay
+// able to save a game and resume later on
+// allow two players to play remotely
+// add AI

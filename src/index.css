@@ -1,6 +1,7 @@
 body {
   background-color: #808080;
   background-image: url('https://www.transparenttextures.com/patterns/brick-wall-dark.png');
+  user-select: none;
 }
 
 .board {
@@ -36,8 +37,7 @@ body {
 .winning-pieces {
   border-color: gold;
   filter: drop-shadow(0 0 1rem gold) blur(0.1rem);
-  /* animation: winning-pieces 5s; */
-  /* animation-iteration-count: infinite; */
+  animation: winning-pieces 1s;
 }
 
 /* toolkit */
@@ -153,5 +153,17 @@ body {
   100% {
     transform: scale(1.2);
     filter: drop-shadow(0 0 1rem gold);
+  }
+}
+
+@keyframes winning-pieces {
+  from {
+    border-color: black;
+    filter: none;
+  }
+
+  to {
+    border-color: gold;
+    filter: drop-shadow(0 0 1rem gold) blur(0.1rem);
   }
 }
