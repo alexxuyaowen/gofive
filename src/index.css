@@ -123,6 +123,7 @@ body {
 
 .game-over-signifier:hover {
   filter: drop-shadow(0 0 1rem gold);
+  cursor: wait;
 }
 
 /* game over */
