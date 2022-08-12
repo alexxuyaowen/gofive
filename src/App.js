@@ -96,7 +96,7 @@ function App() {
           <div
             key={pos}
             className={`space ${classes[piece]} ${
-              specialSpaces.has(pos) && 'special-space'
+              piece === -1 && specialSpaces.has(pos) && 'special-space'
             } ${theFive.includes(pos) && 'winning-pieces'} ${
               piece === -1 &&
               winner === -1 &&
