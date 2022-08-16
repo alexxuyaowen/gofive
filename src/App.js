@@ -4,9 +4,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import { boardActions } from './store/board';
 import axios from 'axios';
 
+import blackPlacementSound from './assets/placement.mp3';
+import whitePlacementSound from './assets/placement2.wav';
+import backSound from './assets/back.wav';
+import clearSound from './assets/clear-board.mp3';
+import winSound from './assets/win.wav';
+import winSound2 from './assets/win2.wav';
+
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
 const BASE = 'https://go-five-26255-default-rtdb.firebaseio.com/room';
 const roomId = 0;
+
+// Audios
+const blackPlacementAudio = new Audio(blackPlacementSound);
+const whitePlacementAudio = new Audio(whitePlacementSound);
+const backAudio = new Audio(backSound);
+const clearAudio = new Audio(clearSound);
+const winAudio = new Audio(winSound);
+const winAudio2 = new Audio(winSound2);
 
 function App() {
   const dispatch = useDispatch();
@@ -93,17 +108,27 @@ function App() {
     }
   }, [history, turn]);
 
+  useEffect(() => {
+    if (winner) {
+      winAudio.play();
+      winAudio2.play();
+    }
+  }, [winner]);
+
   const placeOnBoard = pos => () => {
     if (!winner) {
       dispatch(boardActions.placeOnBoard(pos));
+      (turn === -1 ? blackPlacementAudio : whitePlacementAudio).play();
     }
   };
 
   const back = () => {
-    history.length > 1 ? dispatch(boardActions.back()) : quit();
+    backAudio.play();
+    history.length > 1 ? dispatch(boardActions.back()) : clear(false);
   };
 
-  const quit = () => {
+  const clear = (playSound = true) => {
+    playSound && clearAudio.play();
     dispatch(boardActions.clearBoard());
     axios.delete(`${BASE}/${roomId}.json`);
   };
@@ -149,8 +174,8 @@ function App() {
           } ${winner && 'game-over-signifier'}`}
         />
 
-        <button onClick={quit} disabled={history.length === 0}>
-          <span id='quit-symbol'>X</span>
+        <button onClick={clear} disabled={history.length === 0}>
+          <span id='clear-symbol'>X</span>
         </button>
       </div>
     </Fragment>
@@ -160,12 +185,14 @@ function App() {
 export default App;
 
 // To do:
-// allow two players to play remotely
 // refactor the code - readability, reusability
 // support mobile devices
 // a better appearance
-// add sound effect
 // add a countdown timer
 // able to replay
-// able to save a game and resume later on
 // add AI
+
+// Done:
+// add sound effect
+// able to save a game and resume later on
+// allow two players to play remotely
