@@ -116,7 +116,7 @@ function App() {
   }, [winner]);
 
   const placeOnBoard = pos => () => {
-    if (!winner) {
+    if (!winner && board[pos] === 0) {
       dispatch(boardActions.placeOnBoard(pos));
       (turn === -1 ? blackPlacementAudio : whitePlacementAudio).play();
     }
@@ -143,13 +143,15 @@ function App() {
         {roomId}
       </h1> */}
 
-      <div className={`board ${winner && 'game-over-board'}`}>
+      <div className={`board ${winner && 'prohibited'}`}>
         {board.map((piece, pos) => (
           <div
             key={pos}
-            className={`space ${piece && (piece === -1 ? 'black' : 'white')} ${
-              !piece && specialSpaces.has(pos) && 'special-space'
-            } ${theFive.includes(pos) && 'winning-pieces'} ${
+            className={`space ${
+              piece && (piece === -1 ? 'black prohibited' : 'white prohibited')
+            } ${!piece && specialSpaces.has(pos) && 'special-space'} ${
+              theFive.includes(pos) && 'winning-pieces'
+            } ${
               !piece && !winner && (turn === -1 ? 'black-hover' : 'white-hover')
             }`}
             onClick={placeOnBoard(pos)}

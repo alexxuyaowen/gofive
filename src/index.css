@@ -147,7 +147,7 @@ body {
   filter: drop-shadow(0 0 1rem gold);
 }
 
-.game-over-board {
+.prohibited {
   cursor: not-allowed;
 }
 
