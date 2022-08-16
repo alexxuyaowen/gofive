@@ -6,6 +6,7 @@ import axios from 'axios';
 
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
 const BASE = 'https://go-five-26255-default-rtdb.firebaseio.com/room';
+const roomId = 0;
 
 function App() {
   const dispatch = useDispatch();
@@ -15,13 +16,13 @@ function App() {
 
   const [winner, setWinner] = useState(0);
   const [theFive, setTheFive] = useState([]);
-  const [roomId, setRoomId] = useState(0);
+  // const [roomId, setRoomId] = useState(0);
 
   // update the data every 2s to keep the board updated with the database
   useEffect(() => {
     const interval = setInterval(() => {
       axios.get(`${BASE}/${roomId}.json`).then(({ data }) => {
-        data.history &&
+        data &&
           dispatch(
             boardActions.setBoard({
               board: data.board,
@@ -32,16 +33,18 @@ function App() {
       });
     }, 2000);
     return () => clearInterval(interval);
-  }, [dispatch, roomId]);
+  }, [dispatch]);
 
   // make a patch request on any change to board/history
   useEffect(() => {
     if (history.length)
-      axios.patch(`${BASE}/${roomId}.json`, {
-        board,
-        history,
-      });
-  }, [history, board, roomId]);
+      axios
+        .patch(`${BASE}/${roomId}.json`, {
+          board,
+          history,
+        })
+        .catch(err => alert(err));
+  }, [history, board]);
 
   // check game condition
   useEffect(() => {
@@ -103,10 +106,16 @@ function App() {
     axios.delete(`${BASE}/${roomId}.json`);
   };
 
-  // const joinRoom = () => {};
+  // const joinRoom = () => {
+  //   setRoomId(prev => prev + 1);
+  // };
 
   return (
     <Fragment>
+      {/* <h1 id='room-id' onClick={joinRoom}>
+        {roomId}
+      </h1> */}
+
       <div className={`board ${winner && 'game-over-board'}`}>
         {board.map((piece, pos) => (
           <div
@@ -141,10 +150,6 @@ function App() {
         <button onClick={quit} disabled={history.length === 0}>
           <span id='quit-symbol'>X</span>
         </button>
-
-        {/* <button onClick={joinRoom}>
-          <span id='add-symbol'>+</span>
-        </button> */}
       </div>
     </Fragment>
   );

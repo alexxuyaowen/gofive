@@ -2,7 +2,18 @@ body {
   background-color: #808080;
   background-image: url('https://www.transparenttextures.com/patterns/brick-wall-dark.png');
   user-select: none;
+  text-align: center;
 }
+
+/* #room-id {
+  margin: 0.5rem auto;
+  display: inline-block;
+  width: fit-content;
+  font-family: Arial, Helvetica, sans-serif;
+  outline-style: none;
+  cursor: pointer;
+  border-radius: 50%;
+} */
 
 .board {
   margin: 2rem auto;
@@ -59,7 +70,8 @@ body {
 }
 
 #back-symbol,
-#quit-symbol {
+#quit-symbol,
+#join-symbol {
   font-size: 2rem;
 }
 /* 
