@@ -58,16 +58,17 @@ body {
   background-color: #ccc;
 }
 
-#back-symbol {
+#back-symbol,
+#quit-symbol {
   font-size: 2rem;
 }
-
-#restart-symbol {
+/* 
+#replay-symbol {
   position: relative;
   bottom: 0.9rem;
   right: 0.05rem;
   font-size: 3.7rem;
-}
+} */
 
 .toolkit button:disabled {
   cursor: not-allowed !important;

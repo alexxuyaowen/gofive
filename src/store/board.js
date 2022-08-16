@@ -32,6 +32,12 @@ const boardSlice = createSlice({
       state.history = initialBoard.history;
       state.turn = initialBoard.turn;
     },
+
+    setBoard: (state, action) => {
+      state.board = action.payload.board;
+      state.history = action.payload.history;
+      state.turn = action.payload.turn;
+    },
   },
 });
 

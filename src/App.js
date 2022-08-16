@@ -2,9 +2,10 @@ import { Fragment, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { boardActions } from './store/board';
+import axios from 'axios';
 
-// const initialBoard = new Array(15 * 15).fill(0); // empty is 0, black is -1, white is 1
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
+const BASE = 'https://go-five-26255-default-rtdb.firebaseio.com/room';
 
 function App() {
   const dispatch = useDispatch();
@@ -14,8 +15,35 @@ function App() {
 
   const [winner, setWinner] = useState(0);
   const [theFive, setTheFive] = useState([]);
+  const [roomId, setRoomId] = useState(0);
 
-  // check winning condition
+  // update the data every 2s to keep the board updated with the database
+  useEffect(() => {
+    const interval = setInterval(() => {
+      axios.get(`${BASE}/${roomId}.json`).then(({ data }) => {
+        data.history &&
+          dispatch(
+            boardActions.setBoard({
+              board: data.board,
+              history: data.history,
+              turn: data.history.length % 2 === 0 ? -1 : 1,
+            })
+          );
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [dispatch, roomId]);
+
+  // make a patch request on any change to board/history
+  useEffect(() => {
+    if (history.length)
+      axios.patch(`${BASE}/${roomId}.json`, {
+        board,
+        history,
+      });
+  }, [history, board, roomId]);
+
+  // check game condition
   useEffect(() => {
     const blacks = new Set(),
       whites = new Set();
@@ -57,20 +85,25 @@ function App() {
   }, [history, turn]);
 
   const placeOnBoard = pos => () => {
-    if (!winner) dispatch(boardActions.placeOnBoard(pos));
+    if (!winner) {
+      dispatch(boardActions.placeOnBoard(pos));
+    }
   };
 
-  const goBack = () => {
+  const back = () => {
     dispatch(boardActions.goBack());
     setWinner(0);
     setTheFive([]);
   };
 
-  const restartHandler = () => {
+  const quit = () => {
     dispatch(boardActions.clearBoard());
     setWinner(0);
     setTheFive([]);
+    axios.delete(`${BASE}/${roomId}.json`);
   };
+
+  // const joinRoom = () => {};
 
   return (
     <Fragment>
@@ -89,7 +122,7 @@ function App() {
       </div>
 
       <div className='toolkit'>
-        <button onClick={goBack} disabled={history.length === 0}>
+        <button onClick={back} disabled={history.length === 0}>
           <span id='back-symbol'>⇦</span>
         </button>
 
@@ -105,9 +138,13 @@ function App() {
           } ${winner && 'game-over-signifier'}`}
         />
 
-        <button onClick={restartHandler} disabled={history.length === 0}>
-          <span id='restart-symbol'>⟲</span>
+        <button onClick={quit} disabled={history.length === 0}>
+          <span id='quit-symbol'>X</span>
         </button>
+
+        {/* <button onClick={joinRoom}>
+          <span id='add-symbol'>+</span>
+        </button> */}
       </div>
     </Fragment>
   );
