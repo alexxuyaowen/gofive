@@ -18,35 +18,36 @@ function App() {
   const [theFive, setTheFive] = useState([]);
   // const [roomId, setRoomId] = useState(0);
 
-  // update the data every 2s to keep the board updated with the database
+  // update the board data every 2s to keep the board updated with the database
+  // enable the users to interact remotely
   useEffect(() => {
     const interval = setInterval(() => {
       axios.get(`${BASE}/${roomId}.json`).then(({ data }) => {
-        data &&
-          dispatch(
-            boardActions.setBoard({
-              board: data.board,
-              history: data.history,
-              turn: data.history.length % 2 === 0 ? -1 : 1,
-            })
-          );
+        data
+          ? dispatch(
+              boardActions.setBoard({
+                board: data.board,
+                history: data.history,
+                turn: data.history.length % 2 === 0 ? -1 : 1,
+              })
+            )
+          : dispatch(boardActions.clearBoard());
       });
     }, 2000);
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  // make a patch request on any change to board/history
+  // make a patch request on any change to the board
   useEffect(() => {
-    if (history.length)
-      axios
-        .patch(`${BASE}/${roomId}.json`, {
-          board,
-          history,
-        })
-        .catch(err => alert(err));
+    if (history.length) {
+      axios.patch(`${BASE}/${roomId}.json`, {
+        board,
+        history,
+      });
+    }
   }, [history, board]);
 
-  // check game condition
+  // check game condition on each turn
   useEffect(() => {
     const blacks = new Set(),
       whites = new Set();
@@ -77,14 +78,19 @@ function App() {
 
       for (const pos of pieces) {
         if (directions.some(dir => checkOneDirection(pos, dir))) {
-          setWinner(turn);
-          break;
+          return true;
         }
       }
+
+      return false;
     };
 
-    checkWinning(blacks);
-    checkWinning(whites);
+    if (checkWinning(blacks) || checkWinning(whites)) {
+      setWinner(turn);
+    } else {
+      setWinner(0);
+      setTheFive([]);
+    }
   }, [history, turn]);
 
   const placeOnBoard = pos => () => {
@@ -94,15 +100,11 @@ function App() {
   };
 
   const back = () => {
-    dispatch(boardActions.goBack());
-    setWinner(0);
-    setTheFive([]);
+    history.length > 1 ? dispatch(boardActions.back()) : quit();
   };
 
   const quit = () => {
     dispatch(boardActions.clearBoard());
-    setWinner(0);
-    setTheFive([]);
     axios.delete(`${BASE}/${roomId}.json`);
   };
 

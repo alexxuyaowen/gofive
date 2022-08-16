@@ -21,7 +21,7 @@ const boardSlice = createSlice({
       }
     },
 
-    goBack: state => {
+    back: state => {
       state.board[state.history.at(-1)] = 0;
       state.history.pop();
       state.turn = -state.turn;
