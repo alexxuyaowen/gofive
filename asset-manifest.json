@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/gofive/static/css/main.461e511f.css",
-    "main.js": "/gofive/static/js/main.f531307c.js",
+    "main.css": "/gofive/static/css/main.d0edb24b.css",
+    "main.js": "/gofive/static/js/main.b48fc6a8.js",
     "index.html": "/gofive/index.html",
-    "main.461e511f.css.map": "/gofive/static/css/main.461e511f.css.map",
-    "main.f531307c.js.map": "/gofive/static/js/main.f531307c.js.map"
+    "main.d0edb24b.css.map": "/gofive/static/css/main.d0edb24b.css.map",
+    "main.b48fc6a8.js.map": "/gofive/static/js/main.b48fc6a8.js.map"
   },
   "entrypoints": [
-    "static/css/main.461e511f.css",
-    "static/js/main.f531307c.js"
+    "static/css/main.d0edb24b.css",
+    "static/js/main.b48fc6a8.js"
   ]
 }
