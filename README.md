@@ -2,13 +2,13 @@
 
 ![Demo](https://github.com/alexxuyaowen/gofive/blob/main/demo/demo.png)
 
-- Allow multiple users to interact remotely.
+- Allow multiple users to interact remotely in real time (expect maximum 2s of delay)
 - Game is saved automatically on each move.
-- Previous game is automatically reloaded if the board has not been cleared.
+- Previous game is automatically resumed if the board had not been cleared.
 - Support keyboard interactions:
-  - Press left arrow, backspace, or 'b' to take back a move.
-  - Press 'Escape', 'x', or 'c' to clear the board.
-- Animations will be played upon winning.
+  - Press Left Arrow, Backspace, or 'b' to take back a move.
+  - Press Escape, 'x', or 'c' to clear the board.
 - Special sound effects will be played on each interaction.
+- Animations will be played upon winning.
 
 Try: https://alexxuyaowen.github.io/gofive/
