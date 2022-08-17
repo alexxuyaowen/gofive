@@ -2,7 +2,7 @@
 
 ![Demo](https://github.com/alexxuyaowen/gofive/blob/main/demo/demo.png)
 
-- Allow users to play remotely.
+- Allow multiple users to interact remotely.
 - Game is saved automatically on each move.
 - Previous game is automatically reloaded if the board has not been cleared.
 - Support keyboard interactions:

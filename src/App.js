@@ -31,6 +31,7 @@ function App() {
 
   const [winner, setWinner] = useState(0);
   const [theFive, setTheFive] = useState([]);
+  const [shouldUpdate, setShouldUpdate] = useState(false);
   // const [roomId, setRoomId] = useState(0);
 
   // update the board data every 2s to keep the board updated with the database
@@ -54,13 +55,14 @@ function App() {
 
   // make a patch request on any change to the board
   useEffect(() => {
-    if (history.length) {
+    if (history.length && shouldUpdate) {
       axios.patch(`${BASE}/${roomId}.json`, {
         board,
         history,
       });
+      setShouldUpdate(false);
     }
-  }, [history, board]);
+  }, [history, board, shouldUpdate]);
 
   // check game condition on each turn
   useEffect(() => {
@@ -80,6 +82,12 @@ function App() {
 
       // helper to check each direction
       const checkOneDirection = (pos, dir) => {
+        if (
+          ((dir === 1 || dir === 14) && pos % 15 < 4) ||
+          ((dir === 15 || dir === 16) && pos % 15 > 10)
+        )
+          return false;
+
         for (let i = 0; i < 5; i++) {
           if (!pieces.has(pos + dir * i)) {
             return false;
@@ -108,6 +116,7 @@ function App() {
     }
   }, [history, turn]);
 
+  // play sound effects upon winning
   useEffect(() => {
     if (winner) {
       winAudio.play();
@@ -119,12 +128,18 @@ function App() {
     if (!winner && board[pos] === 0) {
       dispatch(boardActions.placeOnBoard(pos));
       (turn === -1 ? blackPlacementAudio : whitePlacementAudio).play();
+      setShouldUpdate(true);
     }
   };
 
   const back = () => {
     backAudio.play();
-    history.length > 1 ? dispatch(boardActions.back()) : clear(false);
+    if (history.length > 1) {
+      dispatch(boardActions.back());
+      setShouldUpdate(true);
+    } else {
+      clear(false);
+    }
   };
 
   const clear = (playSound = true) => {
@@ -196,6 +211,7 @@ function App() {
 export default App;
 
 // To do:
+// write tests
 // refactor the code - readability, reusability
 // support mobile devices
 // a better appearance
