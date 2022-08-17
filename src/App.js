@@ -31,7 +31,7 @@ function App() {
 
   const [winner, setWinner] = useState(0); // 0 for none, -1 if black wins, 1 if white wins
   const [theFive, setTheFive] = useState([]); // an array to keep track the five winning pieces to trigger animations
-  const [shouldUpdate, setShouldUpdate] = useState(false); // make sure one and only one patch request is made on each interaction
+  const [shouldUpdate, setShouldUpdate] = useState(false); // prevent unwanted behaviors caused by the periodical GET requests
 
   // const [roomId, setRoomId] = useState(0);
 
