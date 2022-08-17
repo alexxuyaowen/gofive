@@ -4,7 +4,7 @@
 
 - Allow multiple users to interact remotely in real time (expect maximum 2s of delay)
 - Game is saved automatically on each move.
-- Previous game is automatically resumed if the board had not been cleared.
+- Previous game is automatically resumed if the board hasn't been cleared.
 - Support keyboard interactions:
   - Press Left Arrow, Backspace, or 'b' to take back a move.
   - Press Escape, 'x', or 'c' to clear the board.
