@@ -29,9 +29,10 @@ function App() {
   const history = useSelector(state => state.board.history);
   const turn = useSelector(state => state.board.turn);
 
-  const [winner, setWinner] = useState(0);
-  const [theFive, setTheFive] = useState([]);
-  const [shouldUpdate, setShouldUpdate] = useState(false);
+  const [winner, setWinner] = useState(0); // 0 for none, -1 if black wins, 1 if white wins
+  const [theFive, setTheFive] = useState([]); // an array to keep track the five winning pieces to trigger animations
+  const [shouldUpdate, setShouldUpdate] = useState(false); // make sure one and only one patch request is made on each interaction
+
   // const [roomId, setRoomId] = useState(0);
 
   // update the board data every 2s to keep the board updated with the database
@@ -66,54 +67,45 @@ function App() {
 
   // check game condition on each turn
   useEffect(() => {
-    const blacks = new Set(),
-      whites = new Set();
+    const toCheck = new Set();
 
     history.forEach((pos, step) => {
-      if (step % 2 === 0) {
-        blacks.add(pos);
-      } else {
-        whites.add(pos);
-      }
+      // a little weird but the logic is that 'turn' is changed immediately after making a move,
+      // therefore, Black is usually found winning on White's turn, and vice versa.
+      if ((turn === 1 && step % 2 === 0) || (turn === -1 && step % 2 === 1))
+        toCheck.add(pos);
     });
 
-    const checkWinning = pieces => {
-      const directions = [1, 14, 15, 16];
+    const directions = [1, 14, 15, 16];
 
-      // helper to check each direction
-      const checkOneDirection = (pos, dir) => {
-        if (
-          ((dir === 1 || dir === 14) && pos % 15 < 4) ||
-          ((dir === 15 || dir === 16) && pos % 15 > 10)
-        )
+    // helper to check each direction
+    const checkOneDirection = (pos, dir) => {
+      if (
+        ((dir === 1 || dir === 14) && pos % 15 < 4) ||
+        ((dir === 15 || dir === 16) && pos % 15 > 10)
+      )
+        return false;
+
+      for (let i = 0; i < 5; i++) {
+        if (!toCheck.has(pos + dir * i)) {
           return false;
-
-        for (let i = 0; i < 5; i++) {
-          if (!pieces.has(pos + dir * i)) {
-            return false;
-          }
-        }
-
-        setTheFive([0, 1, 2, 3, 4].map(e => pos + dir * e));
-
-        return true;
-      };
-
-      for (const pos of pieces) {
-        if (directions.some(dir => checkOneDirection(pos, dir))) {
-          return true;
         }
       }
 
-      return false;
+      setTheFive([0, 1, 2, 3, 4].map(e => pos + dir * e));
+
+      return true;
     };
 
-    if (checkWinning(blacks) || checkWinning(whites)) {
-      setWinner(turn);
-    } else {
-      setWinner(0);
-      setTheFive([]);
+    for (const pos of toCheck) {
+      if (directions.some(dir => checkOneDirection(pos, dir))) {
+        setWinner(turn);
+        return;
+      }
     }
+
+    setWinner(0);
+    setTheFive([]);
   }, [history, turn]);
 
   // play sound effects upon winning
@@ -213,10 +205,9 @@ export default App;
 // To do:
 // write tests
 // refactor the code - readability, reusability
+//
 // support mobile devices
-// a better appearance
 // add a countdown timer
-// able to replay
 // add AI
 
 // Done:
