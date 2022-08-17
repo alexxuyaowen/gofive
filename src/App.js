@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { boardActions } from './store/board';
@@ -133,12 +133,21 @@ function App() {
     axios.delete(`${BASE}/${roomId}.json`);
   };
 
+  const keyDownHandler = e => {
+    // console.log(e.key);
+    if (e.key === 'Backspace' || e.key === 'ArrowLeft' || e.key === 'b') {
+      back();
+    } else if (e.key === 'Escape' || e.key === 'c') {
+      clear();
+    }
+  };
+
   // const joinRoom = () => {
   //   setRoomId(prev => prev + 1);
   // };
 
   return (
-    <Fragment>
+    <main tabIndex={0} onKeyDown={keyDownHandler}>
       {/* <h1 id='room-id' onClick={joinRoom}>
         {roomId}
       </h1> */}
@@ -180,7 +189,7 @@ function App() {
           <span id='clear-symbol'>X</span>
         </button>
       </div>
-    </Fragment>
+    </main>
   );
 }
 

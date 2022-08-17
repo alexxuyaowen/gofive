@@ -1,8 +1,11 @@
+* {
+  outline: none;
+}
+
 body {
   background-color: #808080;
   background-image: url('https://www.transparenttextures.com/patterns/brick-wall-dark.png');
   user-select: none;
-  text-align: center;
 }
 
 /* #room-id {
