@@ -137,7 +137,7 @@ function App() {
     // console.log(e.key);
     if (e.key === 'Backspace' || e.key === 'ArrowLeft' || e.key === 'b') {
       back();
-    } else if (e.key === 'Escape' || e.key === 'c') {
+    } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'c') {
       clear();
     }
   };
