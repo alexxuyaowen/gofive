@@ -61,16 +61,16 @@ function App() {
     setRoomId(new URLSearchParams(window.location.search).get('room'));
     loadBoard(dispatch, apiURL.current);
     setIsLoading(false);
-  }, [dispatch, isLoading]);
+  }, [dispatch]);
 
-  // update the board data every 2s to keep the board updated with the database
+  // periodically update the board data every 2s to keep the board updated with the database
   // enable the users to interact remotely
   useEffect(() => {
     const interval = setInterval(() => {
-      loadBoard(apiURL.current);
+      loadBoard(dispatch, apiURL.current);
     }, DELAY);
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [dispatch]);
 
   // update the api url and the url query string on change of roomId
   useEffect(() => {
@@ -146,7 +146,7 @@ function App() {
       winAudio.play().catch(e => {});
       winAudio2.play().catch(e => {});
     }
-  }, [winner, isLoading]);
+  }, [winner]);
 
   const placeOnBoard = pos => () => {
     if (!winner) {
