@@ -16,7 +16,7 @@ import {
   clearAudio,
   winAudio,
   winAudio2,
-  valid,
+  toNumber,
 } from './Constants';
 
 // fetch board data from the database
@@ -57,14 +57,16 @@ function App() {
   const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
 
-  // console.log(roomId, roomIdTemp);
+  console.log(roomIdTemp, roomId);
 
   // initial load
   useEffect(() => {
-    setRoomId(+new URLSearchParams(window.location.search).get('room'));
+    setRoomId(
+      toNumber(+new URLSearchParams(window.location.search).get('room'))
+    );
     loadBoard(dispatch, apiURL.current);
     setIsLoading(false);
-  }, [dispatch]);
+  }, [dispatch, isLoading]);
 
   // periodically update the board data every 2s to keep the board updated with the database
   // enable the users to interact remotely
@@ -221,8 +223,8 @@ function App() {
         <input
           id='room-id'
           ref={inputFocus}
-          value={valid(roomIdTemp)}
-          placeholder={valid(roomId)}
+          value={roomIdTemp}
+          placeholder={roomId}
           onChange={setIdTemp}
           onKeyDown={enterHandler}
           onBlur={inputBlurHandler}
