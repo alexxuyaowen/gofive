@@ -22,17 +22,15 @@ import {
 // fetch board data from the database
 const loadBoard = async (dispatch, url) => {
   await axios.get(url).then(({ data }) => {
-    if (data) {
-      dispatch(
-        boardActions.setBoard({
-          board: data.board,
-          history: data.history,
-          turn: data.history.length % 2 === 0 ? -1 : 1,
-        })
-      );
-    } else {
-      dispatch(boardActions.clearBoard());
-    }
+    dispatch(
+      data
+        ? boardActions.setBoard({
+            board: data.board,
+            history: data.history,
+            turn: data.history.length % 2 === 0 ? -1 : 1,
+          })
+        : dispatch(boardActions.clearBoard())
+    );
   });
 };
 
@@ -56,7 +54,7 @@ function App() {
   const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
 
-  // console.log(roomIdTemp, roomId, isLoading);
+  console.log(roomIdTemp, roomId, isLoading);
 
   // initial load
   useEffect(() => {
@@ -178,20 +176,21 @@ function App() {
     axios.delete(apiURL.current);
   };
 
-  const keyDownHandler = e => {
+  const keyDownHandler = ({ key }) => {
     // console.log(e.key);
-    if (e.key === 'Backspace' || e.key === 'ArrowLeft' || e.key === 'b') {
+    if (key === 'Backspace' || key === 'ArrowLeft' || key === 'b') {
       back();
-    } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'c') {
+    } else if (key === 'Escape' || key === 'x' || key === 'c') {
       clear();
-    } else if (e.key === ' ') {
+    } else if (key === ' ') {
       inputFocus.current.focus();
     }
   };
 
   // room ID must be an non-negative integer with no leading zeros
-  const setIdTemp = e => {
-    if (e.target.value.match(/^[0-9]*$/g)) setRoomIdTemp(+e.target.value);
+  const setIdTemp = ({ target }) => {
+    if (target.value.match(/^[0-9]*$/g))
+      setRoomIdTemp(target.value.at(0) === '0' ? +target.value : target.value);
   };
 
   const enterHandler = e => {
