@@ -53,13 +53,15 @@ function App() {
   const [shouldUpdate, setShouldUpdate] = useState(false); // prevent unwanted behaviors caused by the periodical GET requests
 
   // room id
-  const [roomIdTemp, setRoomIdTemp] = useState(0);
+  const roomQuery = new URLSearchParams(window.location.search).get('room');
+  const [roomIdTemp, setRoomIdTemp] = useState(roomQuery ? roomQuery : 0);
   const [roomId, setRoomId] = useState(roomIdTemp);
   // const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
 
   // initial load
   useEffect(() => {
+    setRoomId(new URLSearchParams(window.location.search).get('room'));
     loadBoard(dispatch, apiURL.current);
     setIsLoading(false);
   }, [dispatch, isLoading]);
@@ -75,6 +77,7 @@ function App() {
 
   useEffect(() => {
     apiURL.current = `${BASE}/${roomId}.json`;
+    window.history.pushState({}, '', `/?room=${roomId}`);
   }, [roomId]);
 
   // make a patch request on any change to the board
