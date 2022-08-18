@@ -8,6 +8,8 @@ body {
   user-select: none;
 }
 
+/* DON'T style a class named 'false' */
+
 /* header */
 
 header {

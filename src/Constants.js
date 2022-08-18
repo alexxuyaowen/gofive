@@ -18,6 +18,12 @@ export const clearAudio = new Audio(clearSound);
 export const winAudio = new Audio(winSound);
 export const winAudio2 = new Audio(winSound2);
 
-// functions
-export const toValidId = num =>
-  isNaN(num) || num < 0 || num >= Math.pow(10, 8) ? 0 : num;
+// // functions
+export const getRoomIdFromQuery = () => {
+  const queryRoomNum = +new URLSearchParams(window.location.search).get('room');
+  return isNaN(queryRoomNum) ||
+    queryRoomNum < 0 ||
+    queryRoomNum >= Math.pow(10, 8)
+    ? 0
+    : queryRoomNum;
+};
