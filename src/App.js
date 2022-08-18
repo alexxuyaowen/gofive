@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { boardActions } from './store/board';
@@ -214,7 +214,7 @@ function App() {
   };
 
   return (
-    <>
+    <Fragment>
       <header>
         {/* <label htmlFor='room-id'>Room #:</label> */}
         <input
@@ -231,6 +231,7 @@ function App() {
           required
         />
       </header>
+
       <main tabIndex={0} onKeyDown={keyDownHandler}>
         <div
           className={`board ${winner && 'prohibited'} ${
@@ -253,30 +254,30 @@ function App() {
             />
           ))}
         </div>
+      </main>
 
-        <div className='toolkit'>
-          <button onClick={back} disabled={history.length === 0}>
-            <span id='back-symbol'>⇦</span>
-          </button>
+      <footer className='toolkit' tabIndex={0} onKeyDown={keyDownHandler}>
+        <button onClick={back} disabled={history.length === 0}>
+          <span id='back-symbol'>⇦</span>
+        </button>
 
-          <div
-            className={`${
-              !winner
-                ? turn === -1
-                  ? 'black-signifier'
-                  : 'white-signifier'
-                : turn === 1
+        <div
+          className={`${
+            !winner
+              ? turn === -1
                 ? 'black-signifier'
                 : 'white-signifier'
-            } ${winner && 'game-over-signifier'}`}
-          />
+              : turn === 1
+              ? 'black-signifier'
+              : 'white-signifier'
+          } ${winner && 'game-over-signifier'}`}
+        />
 
-          <button onClick={clear} disabled={history.length === 0}>
-            <span id='clear-symbol'>X</span>
-          </button>
-        </div>
-      </main>
-    </>
+        <button onClick={clear} disabled={history.length === 0}>
+          <span id='clear-symbol'>X</span>
+        </button>
+      </footer>
+    </Fragment>
   );
 }
 
