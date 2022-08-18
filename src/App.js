@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { boardActions } from './store/board';
@@ -13,7 +13,7 @@ import winSound2 from './assets/win2.wav';
 
 const specialSpaces = new Set([48, 56, 112, 168, 176]);
 const BASE = 'https://go-five-26255-default-rtdb.firebaseio.com/room';
-const roomId = 0;
+const DELAY = 2000; // update the data every 2s, causing maximum 2s of delay among users in real time
 
 // Audios
 const blackPlacementAudio = new Audio(blackPlacementSound);
@@ -23,41 +23,64 @@ const clearAudio = new Audio(clearSound);
 const winAudio = new Audio(winSound);
 const winAudio2 = new Audio(winSound2);
 
+// fetch board data from the database
+const loadBoard = async (dispatch, url) => {
+  await axios.get(url).then(({ data }) => {
+    if (data) {
+      dispatch(
+        boardActions.setBoard({
+          board: data.board,
+          history: data.history,
+          turn: data.history.length % 2 === 0 ? -1 : 1,
+        })
+      );
+    } else {
+      dispatch(boardActions.clearBoard());
+    }
+  });
+};
+
 function App() {
   const dispatch = useDispatch();
   const board = useSelector(state => state.board.board);
   const history = useSelector(state => state.board.history);
   const turn = useSelector(state => state.board.turn);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [winner, setWinner] = useState(0); // 0 for none, -1 if black wins, 1 if white wins
   const [theFive, setTheFive] = useState([]); // an array to keep track the five winning pieces to trigger animations
   const [shouldUpdate, setShouldUpdate] = useState(false); // prevent unwanted behaviors caused by the periodical GET requests
 
-  // const [roomId, setRoomId] = useState(0);
+  // room id
+  const [roomIdTemp, setRoomIdTemp] = useState(0);
+  const [roomId, setRoomId] = useState(roomIdTemp);
+  // const inputFocus = useRef(roomIdTemp);
+  const apiURL = useRef(`${BASE}/${roomId}.json`);
+
+  // initial load
+  useEffect(() => {
+    loadBoard(dispatch, apiURL.current);
+    setIsLoading(false);
+  }, [dispatch, isLoading]);
 
   // update the board data every 2s to keep the board updated with the database
   // enable the users to interact remotely
   useEffect(() => {
     const interval = setInterval(() => {
-      axios.get(`${BASE}/${roomId}.json`).then(({ data }) => {
-        data
-          ? dispatch(
-              boardActions.setBoard({
-                board: data.board,
-                history: data.history,
-                turn: data.history.length % 2 === 0 ? -1 : 1,
-              })
-            )
-          : dispatch(boardActions.clearBoard());
-      });
-    }, 2000);
+      loadBoard(dispatch, apiURL.current);
+    }, DELAY);
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch, isLoading]);
+
+  useEffect(() => {
+    apiURL.current = `${BASE}/${roomId}.json`;
+  }, [roomId]);
 
   // make a patch request on any change to the board
   useEffect(() => {
     if (history.length && shouldUpdate) {
-      axios.patch(`${BASE}/${roomId}.json`, {
+      axios.patch(apiURL.current, {
         board,
         history,
       });
@@ -110,14 +133,14 @@ function App() {
 
   // play sound effects upon winning
   useEffect(() => {
-    if (winner) {
-      winAudio.play();
-      winAudio2.play();
+    if (winner && !isLoading) {
+      winAudio.play().catch(e => {});
+      winAudio2.play().catch(e => {});
     }
-  }, [winner]);
+  }, [winner, isLoading]);
 
   const placeOnBoard = pos => () => {
-    if (!winner && board[pos] === 0) {
+    if (!winner) {
       dispatch(boardActions.placeOnBoard(pos));
       (turn === -1 ? blackPlacementAudio : whitePlacementAudio).play();
       setShouldUpdate(true);
@@ -137,7 +160,7 @@ function App() {
   const clear = (playSound = true) => {
     playSound && clearAudio.play();
     dispatch(boardActions.clearBoard());
-    axios.delete(`${BASE}/${roomId}.json`);
+    axios.delete(apiURL.current);
   };
 
   const keyDownHandler = e => {
@@ -147,56 +170,105 @@ function App() {
     } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'c') {
       clear();
     }
+    // else if (e.key === ' ') {
+    //   inputFocus.current.focus();
+    // }
   };
 
-  // const joinRoom = () => {
-  //   setRoomId(prev => prev + 1);
-  // };
+  // room ID must be an non-negative number with no leading zeros
+  const setIdTemp = e => {
+    if (e.target.value.length < 1 || e.target.value.at(-1).match(/[0-9]/g))
+      setRoomIdTemp(e.target.value);
+
+    if (e.target.value.length === 2 && e.target.value.at(0) === '0')
+      setRoomIdTemp(e.target.value.slice(1));
+  };
+
+  const enterHandler = e => {
+    if (e.key === 'Enter') {
+      e.target.blur();
+    }
+  };
+
+  const inputBlurHandler = () => {
+    if (roomIdTemp === roomId) return;
+
+    if (roomIdTemp) {
+      setIsLoading(true);
+      setRoomId(roomIdTemp);
+    } else {
+      setRoomIdTemp(roomId);
+    }
+  };
+
+  const inputFocusHandler = () => {
+    setRoomIdTemp('');
+  };
 
   return (
-    <main tabIndex={0} onKeyDown={keyDownHandler}>
-      {/* <h1 id='room-id' onClick={joinRoom}>
-        {roomId}
-      </h1> */}
-
-      <div className={`board ${winner && 'prohibited'}`}>
-        {board.map((piece, pos) => (
-          <div
-            key={pos}
-            className={`space ${
-              piece && (piece === -1 ? 'black prohibited' : 'white prohibited')
-            } ${!piece && specialSpaces.has(pos) && 'special-space'} ${
-              theFive.includes(pos) && 'winning-pieces'
-            } ${
-              !piece && !winner && (turn === -1 ? 'black-hover' : 'white-hover')
-            }`}
-            onClick={placeOnBoard(pos)}
-          />
-        ))}
-      </div>
-
-      <div className='toolkit'>
-        <button onClick={back} disabled={history.length === 0}>
-          <span id='back-symbol'>⇦</span>
-        </button>
-
+    <>
+      <header>
+        {/* <label htmlFor='room-id'>Room #:</label> */}
+        <input
+          id='room-id'
+          // ref={inputFocus}
+          value={roomIdTemp}
+          onChange={setIdTemp}
+          onKeyDown={enterHandler}
+          onBlur={inputBlurHandler}
+          onFocus={inputFocusHandler}
+          tabIndex={0}
+          autoComplete='off'
+          maxLength={8}
+          required
+        />
+      </header>
+      <main tabIndex={0} onKeyDown={keyDownHandler}>
         <div
-          className={`${
-            !winner
-              ? turn === -1
+          className={`board ${winner && 'prohibited'} ${
+            isLoading && 'loading'
+          }`}
+        >
+          {board.map((piece, pos) => (
+            <div
+              key={pos}
+              className={`space ${
+                piece && (piece === -1 ? 'black' : 'white')
+              } ${!piece && specialSpaces.has(pos) && 'special-space'} ${
+                theFive.includes(pos) && 'winning-pieces'
+              } ${
+                !piece &&
+                !winner &&
+                (turn === -1 ? 'black-hover' : 'white-hover')
+              }`}
+              onClick={placeOnBoard(pos)}
+            />
+          ))}
+        </div>
+
+        <div className='toolkit'>
+          <button onClick={back} disabled={history.length === 0}>
+            <span id='back-symbol'>⇦</span>
+          </button>
+
+          <div
+            className={`${
+              !winner
+                ? turn === -1
+                  ? 'black-signifier'
+                  : 'white-signifier'
+                : turn === 1
                 ? 'black-signifier'
                 : 'white-signifier'
-              : turn === 1
-              ? 'black-signifier'
-              : 'white-signifier'
-          } ${winner && 'game-over-signifier'}`}
-        />
+            } ${winner && 'game-over-signifier'}`}
+          />
 
-        <button onClick={clear} disabled={history.length === 0}>
-          <span id='clear-symbol'>X</span>
-        </button>
-      </div>
-    </main>
+          <button onClick={clear} disabled={history.length === 0}>
+            <span id='clear-symbol'>X</span>
+          </button>
+        </div>
+      </main>
+    </>
   );
 }
 
@@ -205,7 +277,8 @@ export default App;
 // To do:
 // write tests
 // refactor the code - readability, reusability
-//
+// able to play in seperate rooms
+// split into components
 // support mobile devices
 // add a countdown timer
 // add AI

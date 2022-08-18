@@ -8,18 +8,46 @@ body {
   user-select: none;
 }
 
-/* #room-id {
+/* header */
+
+header {
+  text-align: center;
+}
+
+#room-id {
+  text-align: center;
   margin: 0.5rem auto;
-  display: inline-block;
-  width: fit-content;
-  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-weight: 900;
+  width: 8rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  background-color: #808080;
+  font-family: 'Courier New', Courier, monospace;
   outline-style: none;
-  cursor: pointer;
-  border-radius: 50%;
+  border-style: none;
+  border-radius: 1rem;
+}
+
+#room-id:focus {
+  height: 2rem;
+  color: #aaaaaa;
+}
+
+/* label[for='room-id'] {
+  font-size: 1.3rem;
+  margin-right: 1rem;
 } */
 
+/* main */
+
+.loading {
+  cursor: wait !important;
+  pointer-events: none;
+}
+
 .board {
-  margin: 2rem auto;
+  margin: 0.5rem auto 1.5rem;
   width: 39rem;
   display: flex;
   align-items: center;
@@ -38,10 +66,12 @@ body {
 
 .black {
   background-color: black;
+  pointer-events: none;
 }
 
 .white {
   background-color: white;
+  pointer-events: none;
 }
 
 .special-space {
