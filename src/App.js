@@ -111,9 +111,13 @@ function App() {
 
     // helper to check each direction
     const checkOneDirection = (pos, dir) => {
+      const [x, y] = [pos % 15, (pos / 15) | 0];
+
       if (
-        ((dir === 1 || dir === 14) && pos % 15 < 4) ||
-        ((dir === 15 || dir === 16) && pos % 15 > 10)
+        (dir === 1 && x > 10) ||
+        (dir === 14 && (x < 4 || y > 10)) ||
+        (dir === 15 && y > 10) ||
+        (dir === 16 && (x > 10 || y > 10))
       )
         return false;
 
@@ -141,7 +145,7 @@ function App() {
 
   // play sound effects upon winning
   useEffect(() => {
-    if (winner && !isLoading) {
+    if (winner) {
       winAudio.play().catch(e => {});
       winAudio2.play().catch(e => {});
     }
