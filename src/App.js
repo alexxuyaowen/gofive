@@ -16,6 +16,7 @@ import {
   clearAudio,
   winAudio,
   winAudio2,
+  valid,
 } from './Constants';
 
 // fetch board data from the database
@@ -55,6 +56,8 @@ function App() {
   const [roomId, setRoomId] = useState(roomIdTemp);
   const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
+
+  // console.log(roomId, roomIdTemp);
 
   // initial load
   useEffect(() => {
@@ -218,8 +221,8 @@ function App() {
         <input
           id='room-id'
           ref={inputFocus}
-          value={roomIdTemp}
-          placeholder={isNaN(roomId) ? 0 : roomId}
+          value={valid(roomIdTemp)}
+          placeholder={valid(roomId)}
           onChange={setIdTemp}
           onKeyDown={enterHandler}
           onBlur={inputBlurHandler}

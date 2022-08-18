@@ -17,3 +17,6 @@ export const backAudio = new Audio(backSound);
 export const clearAudio = new Audio(clearSound);
 export const winAudio = new Audio(winSound);
 export const winAudio2 = new Audio(winSound2);
+
+// functions
+export const valid = num => (isNaN(num) ? 0 : num);
