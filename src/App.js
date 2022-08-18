@@ -4,24 +4,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { boardActions } from './store/board';
 import axios from 'axios';
 
-import blackPlacementSound from './assets/placement.mp3';
-import whitePlacementSound from './assets/placement2.wav';
-import backSound from './assets/back.wav';
-import clearSound from './assets/clear-board.mp3';
-import winSound from './assets/win.wav';
-import winSound2 from './assets/win2.wav';
+import Button from './components/Button';
 
-const specialSpaces = new Set([48, 56, 112, 168, 176]);
-const BASE = 'https://go-five-26255-default-rtdb.firebaseio.com/room';
-const DELAY = 2000; // update the data every 2s, causing maximum 2s of delay among users in real time
-
-// Audios
-const blackPlacementAudio = new Audio(blackPlacementSound);
-const whitePlacementAudio = new Audio(whitePlacementSound);
-const backAudio = new Audio(backSound);
-const clearAudio = new Audio(clearSound);
-const winAudio = new Audio(winSound);
-const winAudio2 = new Audio(winSound2);
+import {
+  BASE,
+  DELAY,
+  specialSpaces,
+  blackPlacementAudio,
+  whitePlacementAudio,
+  backAudio,
+  clearAudio,
+  winAudio,
+  winAudio2,
+} from './Constants';
 
 // fetch board data from the database
 const loadBoard = async (dispatch, url) => {
@@ -72,11 +67,12 @@ function App() {
   // enable the users to interact remotely
   useEffect(() => {
     const interval = setInterval(() => {
-      loadBoard(dispatch, apiURL.current);
+      loadBoard(apiURL.current);
     }, DELAY);
     return () => clearInterval(interval);
-  }, [dispatch, isLoading]);
+  }, [isLoading]);
 
+  // update the api url and the url query string on change of roomId
   useEffect(() => {
     apiURL.current = `${BASE}/${roomId}.json`;
     window.history.pushState(
@@ -221,6 +217,7 @@ function App() {
           id='room-id'
           ref={inputFocus}
           value={roomIdTemp}
+          placeholder={roomId}
           onChange={setIdTemp}
           onKeyDown={enterHandler}
           onBlur={inputBlurHandler}
@@ -232,34 +229,32 @@ function App() {
         />
       </header>
 
-      <main tabIndex={0} onKeyDown={keyDownHandler}>
-        <div
-          className={`board ${winner && 'prohibited'} ${
-            isLoading && 'loading'
-          }`}
-        >
-          {board.map((piece, pos) => (
-            <div
-              key={pos}
-              className={`space ${
-                piece && (piece === -1 ? 'black' : 'white')
-              } ${!piece && specialSpaces.has(pos) && 'special-space'} ${
-                theFive.includes(pos) && 'winning-pieces'
-              } ${
-                !piece &&
-                !winner &&
-                (turn === -1 ? 'black-hover' : 'white-hover')
-              }`}
-              onClick={placeOnBoard(pos)}
-            />
-          ))}
-        </div>
+      <main
+        className={`board ${winner && 'prohibited'} ${isLoading && 'loading'}`}
+        tabIndex={0}
+        onKeyDown={keyDownHandler}
+      >
+        {board.map((piece, pos) => (
+          <span
+            key={pos}
+            className={`space ${piece && (piece === -1 ? 'black' : 'white')} ${
+              !piece && specialSpaces.has(pos) && 'special-space'
+            } ${theFive.includes(pos) && 'winning-pieces'} ${
+              !piece && !winner && (turn === -1 ? 'black-hover' : 'white-hover')
+            }`}
+            onClick={placeOnBoard(pos)}
+          />
+        ))}
       </main>
 
       <footer className='toolkit' tabIndex={0} onKeyDown={keyDownHandler}>
-        <button onClick={back} disabled={history.length === 0}>
-          <span id='back-symbol'>⇦</span>
-        </button>
+        <Button
+          onClick={back}
+          disabled={history.length === 0}
+          symbol='back-symbol'
+        >
+          ⇦
+        </Button>
 
         <div
           className={`${
@@ -271,12 +266,15 @@ function App() {
               ? 'black-signifier'
               : 'white-signifier'
           } ${winner && 'game-over-signifier'}`}
-          onClick={() => inputFocus.current.focus()}
         />
 
-        <button onClick={clear} disabled={history.length === 0}>
-          <span id='clear-symbol'>X</span>
-        </button>
+        <Button
+          onClick={clear}
+          disabled={history.length === 0}
+          symbol='clear-symbol'
+        >
+          X
+        </Button>
       </footer>
     </Fragment>
   );
@@ -285,9 +283,9 @@ function App() {
 export default App;
 
 // To do:
-// write tests
+// clean up App.js
 // refactor the code - readability, reusability
-// split into components
+// write tests
 // support mobile devices?
 // add a countdown timer?
 // add AI?
