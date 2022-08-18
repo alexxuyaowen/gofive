@@ -57,7 +57,7 @@ function App() {
   const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
 
-  console.log(roomIdTemp, roomId);
+  // console.log(roomIdTemp, roomId, isLoading);
 
   // initial load
   useEffect(() => {
