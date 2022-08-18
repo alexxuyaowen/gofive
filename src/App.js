@@ -77,7 +77,12 @@ function App() {
 
   useEffect(() => {
     apiURL.current = `${BASE}/${roomId}.json`;
-    window.history.pushState({}, '', `/?room=${roomId}`);
+
+    window.history.pushState(
+      {},
+      '',
+      `${window.location.pathname}?room=${roomId}`
+    );
   }, [roomId]);
 
   // make a patch request on any change to the board
