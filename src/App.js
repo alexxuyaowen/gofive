@@ -58,7 +58,7 @@ function App() {
 
   // initial load
   useEffect(() => {
-    setRoomId(new URLSearchParams(window.location.search).get('room'));
+    setRoomId(+new URLSearchParams(window.location.search).get('room'));
     loadBoard(dispatch, apiURL.current);
     setIsLoading(false);
   }, [dispatch]);
@@ -74,12 +74,14 @@ function App() {
 
   // update the api url and the url query string on change of roomId
   useEffect(() => {
-    apiURL.current = `${BASE}/${roomId}.json`;
-    window.history.pushState(
-      {},
-      '',
-      `${window.location.pathname}?room=${roomId}`
-    );
+    if (roomId >= 0 && roomId < Math.pow(10, 8)) {
+      apiURL.current = `${BASE}/${roomId}.json`;
+      window.history.pushState(
+        {},
+        '',
+        `${window.location.pathname}${roomId === 0 ? '' : `?room=${roomId}`}`
+      );
+    }
   }, [roomId]);
 
   // make a patch request on any change to the board
@@ -201,7 +203,7 @@ function App() {
       setRoomIdTemp(roomId);
     } else {
       setIsLoading(true);
-      setRoomId(roomIdTemp);
+      setRoomId(+roomIdTemp);
     }
   };
 
@@ -225,7 +227,6 @@ function App() {
           tabIndex={0}
           autoComplete='off'
           maxLength={8}
-          required
         />
       </header>
 
