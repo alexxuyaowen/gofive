@@ -58,7 +58,7 @@ function App() {
     (roomQuery > 0 && roomQuery < Math.pow(10, 8)) > 0 ? roomQuery : 0
   );
   const [roomId, setRoomId] = useState(roomIdTemp);
-  // const inputFocus = useRef(roomIdTemp);
+  const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
 
   // initial load
@@ -182,10 +182,9 @@ function App() {
       back();
     } else if (e.key === 'Escape' || e.key === 'x' || e.key === 'c') {
       clear();
+    } else if (e.key === ' ') {
+      inputFocus.current.focus();
     }
-    // else if (e.key === ' ') {
-    //   inputFocus.current.focus();
-    // }
   };
 
   // room ID must be an non-negative integer with no leading zeros
@@ -202,11 +201,11 @@ function App() {
   const inputBlurHandler = () => {
     if (roomIdTemp === roomId) return;
 
-    if (roomIdTemp) {
+    if (roomIdTemp === '') {
+      setRoomIdTemp(roomId);
+    } else {
       setIsLoading(true);
       setRoomId(roomIdTemp);
-    } else {
-      setRoomIdTemp(roomId);
     }
   };
 
@@ -220,7 +219,7 @@ function App() {
         {/* <label htmlFor='room-id'>Room #:</label> */}
         <input
           id='room-id'
-          // ref={inputFocus}
+          ref={inputFocus}
           value={roomIdTemp}
           onChange={setIdTemp}
           onKeyDown={enterHandler}
