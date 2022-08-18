@@ -11,7 +11,7 @@
 - Support keyboard interactions:
   - Press Left Arrow, Backspace, or 'b' to take back a move.
   - Press Escape, 'x', or 'c' to clear the board.
-  - Press the space bar to edit the room number.
+  - Edit the room number by pressing the space bar to join a room.
 - Special sound effects will be played on each interaction.
 - Speical animations will be played upon winning.
 
