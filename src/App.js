@@ -286,13 +286,13 @@ export default App;
 // To do:
 // write tests
 // refactor the code - readability, reusability
-// able to play in seperate rooms
 // split into components
-// support mobile devices
-// add a countdown timer
-// add AI
+// support mobile devices?
+// add a countdown timer?
+// add AI?
 
 // Done:
+// able to play in seperate rooms
 // add sound effect
 // able to save a game and resume later on
 // allow two players to play remotely
