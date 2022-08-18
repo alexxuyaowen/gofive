@@ -52,9 +52,11 @@ function App() {
   const [theFive, setTheFive] = useState([]); // an array to keep track the five winning pieces to trigger animations
   const [shouldUpdate, setShouldUpdate] = useState(false); // prevent unwanted behaviors caused by the periodical GET requests
 
-  // room id
-  const roomQuery = new URLSearchParams(window.location.search).get('room');
-  const [roomIdTemp, setRoomIdTemp] = useState(roomQuery ? roomQuery : 0);
+  // room id, a non-negative integer between 0 and 99999999
+  const roomQuery = +new URLSearchParams(window.location.search).get('room');
+  const [roomIdTemp, setRoomIdTemp] = useState(
+    (roomQuery > 0 && roomQuery < Math.pow(10, 8)) > 0 ? roomQuery : 0
+  );
   const [roomId, setRoomId] = useState(roomIdTemp);
   // const inputFocus = useRef(roomIdTemp);
   const apiURL = useRef(`${BASE}/${roomId}.json`);
@@ -77,7 +79,6 @@ function App() {
 
   useEffect(() => {
     apiURL.current = `${BASE}/${roomId}.json`;
-
     window.history.pushState(
       {},
       '',
@@ -187,13 +188,9 @@ function App() {
     // }
   };
 
-  // room ID must be an non-negative number with no leading zeros
+  // room ID must be an non-negative integer with no leading zeros
   const setIdTemp = e => {
-    if (e.target.value.length < 1 || e.target.value.at(-1).match(/[0-9]/g))
-      setRoomIdTemp(e.target.value);
-
-    if (e.target.value.length === 2 && e.target.value.at(0) === '0')
-      setRoomIdTemp(e.target.value.slice(1));
+    if (e.target.value.match(/^[0-9]*$/g)) setRoomIdTemp(+e.target.value);
   };
 
   const enterHandler = e => {
