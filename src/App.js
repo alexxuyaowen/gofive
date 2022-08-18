@@ -271,6 +271,7 @@ function App() {
               ? 'black-signifier'
               : 'white-signifier'
           } ${winner && 'game-over-signifier'}`}
+          onClick={() => inputFocus.current.focus()}
         />
 
         <button onClick={clear} disabled={history.length === 0}>
