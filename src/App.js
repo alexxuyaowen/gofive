@@ -16,7 +16,7 @@ import {
   clearAudio,
   winAudio,
   winAudio2,
-  toNumber,
+  toValidId,
 } from './Constants';
 
 // fetch board data from the database
@@ -49,9 +49,8 @@ function App() {
   const [shouldUpdate, setShouldUpdate] = useState(false); // prevent unwanted behaviors caused by the periodical GET requests
 
   // room id, a non-negative integer between 0 and 99999999
-  const roomQuery = +new URLSearchParams(window.location.search).get('room');
   const [roomIdTemp, setRoomIdTemp] = useState(
-    (roomQuery > 0 && roomQuery < Math.pow(10, 8)) > 0 ? roomQuery : 0
+    toValidId(+new URLSearchParams(window.location.search).get('room'))
   );
   const [roomId, setRoomId] = useState(roomIdTemp);
   const inputFocus = useRef(roomIdTemp);
@@ -62,7 +61,7 @@ function App() {
   // initial load
   useEffect(() => {
     setRoomId(
-      toNumber(+new URLSearchParams(window.location.search).get('room'))
+      toValidId(+new URLSearchParams(window.location.search).get('room'))
     );
     loadBoard(dispatch, apiURL.current);
     setIsLoading(false);
