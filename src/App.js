@@ -219,7 +219,7 @@ function App() {
           id='room-id'
           ref={inputFocus}
           value={roomIdTemp}
-          placeholder={roomId}
+          placeholder={isNaN(roomId) ? 0 : roomId}
           onChange={setIdTemp}
           onKeyDown={enterHandler}
           onBlur={inputBlurHandler}
