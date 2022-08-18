@@ -17,21 +17,22 @@ import {
   winAudio,
   winAudio2,
   getRoomIdFromQuery,
-} from './Constants';
+  setQuery,
+} from './constants';
 
 // fetch board data from the database
 const loadBoard = async (dispatch, url) => {
-  await axios.get(url).then(({ data }) => {
-    dispatch(
-      data
-        ? boardActions.setBoard({
-            board: data.board,
-            history: data.history,
-            turn: data.history.length % 2 === 0 ? -1 : 1,
-          })
-        : dispatch(boardActions.clearBoard())
-    );
-  });
+  const { data } = await axios.get(url);
+
+  dispatch(
+    data
+      ? boardActions.setBoard({
+          board: data.board,
+          history: data.history,
+          turn: data.history.length % 2 === 0 ? -1 : 1,
+        })
+      : dispatch(boardActions.clearBoard())
+  );
 };
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
   const [theFive, setTheFive] = useState([]); // an array to keep track the five winning pieces to trigger animations
   const [shouldUpdate, setShouldUpdate] = useState(false); // prevent unwanted behaviors caused by the periodical GET requests
 
-  // room id, a non-negative integer between 0 and 99999999
+  // room id
   const [roomIdTemp, setRoomIdTemp] = useState(getRoomIdFromQuery());
   const [roomId, setRoomId] = useState(roomIdTemp);
   const inputFocus = useRef(roomIdTemp);
@@ -74,11 +75,7 @@ function App() {
   useEffect(() => {
     if (roomId >= 0 && roomId < Math.pow(10, 8)) {
       apiURL.current = `${BASE}/${roomId}.json`;
-      window.history.pushState(
-        {},
-        '',
-        `${window.location.pathname}${roomId === 0 ? '' : `?room=${roomId}`}`
-      );
+      setQuery(`${roomId === 0 ? '' : `?room=${roomId}`}`);
     }
   }, [roomId]);
 
@@ -100,8 +97,8 @@ function App() {
     history.forEach((pos, step) => {
       // a little weird but the logic is that 'turn' is changed immediately after making a move,
       // therefore, Black is usually found winning on White's turn, and vice versa.
-      if ((turn === 1 && step % 2 === 0) || (turn === -1 && step % 2 === 1))
-        toCheck.add(pos);
+      // bit operation "step & 1" is used for optimization, equivalent to "step % 2"
+      if ((step & 1) === (turn === -1 ? 1 : 0)) toCheck.add(pos);
     });
 
     const directions = [1, 14, 15, 16];
@@ -118,11 +115,7 @@ function App() {
       )
         return false;
 
-      for (let i = 0; i < 5; i++) {
-        if (!toCheck.has(pos + dir * i)) {
-          return false;
-        }
-      }
+      for (let i = 0; i < 5; i++) if (!toCheck.has(pos + dir * i)) return false;
 
       setTheFive([0, 1, 2, 3, 4].map(e => pos + dir * e));
 
@@ -157,17 +150,19 @@ function App() {
   };
 
   const back = () => {
-    backAudio.play();
-    if (history.length > 1) {
-      dispatch(boardActions.back());
-      setShouldUpdate(true);
-    } else {
-      clear(false);
+    if (history.length > 0) {
+      backAudio.play();
+      if (history.length > 1) {
+        dispatch(boardActions.back());
+        setShouldUpdate(true);
+      } else {
+        clear(false);
+      }
     }
   };
 
   const clear = (playSound = true) => {
-    playSound && clearAudio.play();
+    playSound && history.length > 0 && clearAudio.play();
     dispatch(boardActions.clearBoard());
     axios.delete(apiURL.current);
   };

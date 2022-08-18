@@ -18,7 +18,9 @@ export const clearAudio = new Audio(clearSound);
 export const winAudio = new Audio(winSound);
 export const winAudio2 = new Audio(winSound2);
 
-// // functions
+// functions
+
+// room id must be a non-negative integer between 0 and 99999999
 export const getRoomIdFromQuery = () => {
   const queryRoomNum = +new URLSearchParams(window.location.search).get('room');
   return isNaN(queryRoomNum) ||
@@ -26,4 +28,9 @@ export const getRoomIdFromQuery = () => {
     queryRoomNum >= Math.pow(10, 8)
     ? 0
     : queryRoomNum;
+};
+
+// given a query string, change the current url accordingly
+export const setQuery = qs => {
+  window.history.pushState({}, '', `${window.location.pathname}${qs}`);
 };
