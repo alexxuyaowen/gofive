@@ -108,10 +108,9 @@ function App() {
       const [x, y] = [pos % 15, (pos / 15) | 0];
 
       if (
-        (dir === 1 && x > 10) ||
-        (dir === 14 && (x < 4 || y > 10)) ||
-        (dir === 15 && y > 10) ||
-        (dir === 16 && (x > 10 || y > 10))
+        ((dir === 1 || dir === 16) && x > 10) ||
+        (dir !== 1 && y > 10) ||
+        (dir === 14 && x < 4)
       )
         return false;
 
