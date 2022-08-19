@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/gofive/static/css/main.0517aaa7.css",
-    "main.js": "/gofive/static/js/main.a089e973.js",
+    "main.css": "/gofive/static/css/main.cf7b7c3c.css",
+    "main.js": "/gofive/static/js/main.71b8cd0b.js",
     "static/media/win.wav": "/gofive/static/media/win.53ad2b7a8edc2bf422c0.wav",
     "static/media/win2.wav": "/gofive/static/media/win2.6b3dcb3bf1b04cf78035.wav",
     "static/media/back.wav": "/gofive/static/media/back.934ccddb9f77a5a8438f.wav",
@@ -9,11 +9,11 @@
     "static/media/placement.mp3": "/gofive/static/media/placement.b0345300c8956258d912.mp3",
     "static/media/placement2.wav": "/gofive/static/media/placement2.a7304208d2c7d197085c.wav",
     "index.html": "/gofive/index.html",
-    "main.0517aaa7.css.map": "/gofive/static/css/main.0517aaa7.css.map",
-    "main.a089e973.js.map": "/gofive/static/js/main.a089e973.js.map"
+    "main.cf7b7c3c.css.map": "/gofive/static/css/main.cf7b7c3c.css.map",
+    "main.71b8cd0b.js.map": "/gofive/static/js/main.71b8cd0b.js.map"
   },
   "entrypoints": [
-    "static/css/main.0517aaa7.css",
-    "static/js/main.a089e973.js"
+    "static/css/main.cf7b7c3c.css",
+    "static/js/main.71b8cd0b.js"
   ]
 }
