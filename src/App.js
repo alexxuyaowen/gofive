@@ -114,7 +114,7 @@ function App() {
 
       for (let i = 0; i < 5; i++) if (!toCheck.has(pos + dir * i)) return false;
 
-      setTheFive([0, 1, 2, 3, 4].map(e => pos + dir * e));
+      setTheFive([...new Array(5).keys()].map(e => pos + dir * e));
 
       return true;
     };
