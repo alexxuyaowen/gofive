@@ -4,8 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { boardActions } from './store/board';
 import axios from 'axios';
 
-import Button from './components/Button';
-
 import {
   BASE,
   DELAY,
@@ -242,15 +240,11 @@ function App() {
       </main>
 
       <footer className='toolkit' tabIndex={0} onKeyDown={keyDownHandler}>
-        <Button
-          onClick={back}
-          disabled={history.length === 0}
-          symbol='back-symbol'
-        >
+        <button onClick={back} disabled={history.length === 0}>
           ⇦
-        </Button>
+        </button>
 
-        <div
+        <span
           className={`${
             !winner
               ? turn === -1
@@ -262,13 +256,9 @@ function App() {
           } ${winner && 'game-over-signifier'}`}
         />
 
-        <Button
-          onClick={clear}
-          disabled={history.length === 0}
-          symbol='clear-symbol'
-        >
+        <button onClick={clear} disabled={history.length === 0}>
           X
-        </Button>
+        </button>
       </footer>
     </Fragment>
   );
